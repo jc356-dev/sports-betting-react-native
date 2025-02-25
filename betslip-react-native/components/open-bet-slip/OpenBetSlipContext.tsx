@@ -52,7 +52,7 @@ interface BetSlipContextProps {
   bets: Bet[];
   deleteBet: (id: number) => void;
   status: BetStatus;
-  setupCashBet: () => void;
+  setupForAnotherCurrency: () => void;
 }
 
 const BetSlipContext = createContext<BetSlipContextProps | undefined>(
@@ -184,8 +184,8 @@ export const BetSlipProvider: React.FC<{
     setBets(bets.filter((b) => b.id !== id));
   };
 
-  const setupCashBet = () => {
-    setIsCurrencyCoin(false);
+  const setupForAnotherCurrency = () => {
+    setIsCurrencyCoin(!isCurrencyCoin);
     setSelectedAmount(undefined);
     setStatus(BetStatus.NONE);
     setActiveTab(Tabs.Singles);
@@ -211,7 +211,7 @@ export const BetSlipProvider: React.FC<{
         bets,
         deleteBet,
         status,
-        setupCashBet
+        setupForAnotherCurrency
       }}
     >
       {children}

@@ -33,11 +33,10 @@ export default function OpenBetSlip({ close }: OpenBetSlipProps) {
     deleteBet,
     status,
     handleConfirmBet,
-    isCurrencyCoin,
   } = useBetSlip();
 
   useEffect(() => {
-    if(bets.length === 0 || (status === BetStatus.CONFIRMED && !isCurrencyCoin)) {
+    if(bets.length === 0) {
       close()
     }
   }, [bets.length, status]);
@@ -95,7 +94,7 @@ export default function OpenBetSlip({ close }: OpenBetSlipProps) {
 
         <Text style={styles.maxAmountText}>Max Bet Amount: 1,000.000</Text>
 
-        {BetStatus.CONFIRMED === status && isCurrencyCoin && (
+        {BetStatus.CONFIRMED === status && (
           <BetConfirmation
             onNo={() => {
               close();

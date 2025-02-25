@@ -2,13 +2,14 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { IconSymbol } from "../ui/IconSymbol";
 import { useBetSlip } from "./OpenBetSlipContext";
+import { Colors } from "@/constants/Colors";
 
 interface BetConfirmationProps {
   onNo: () => void;
 }
 
 export default function BetConfirmation(props: BetConfirmationProps) {
-  const { setupCashBet } = useBetSlip()
+  const { setupForAnotherCurrency: setupCashBet, isCurrencyCoin } = useBetSlip()
 
   return (
     <View>
@@ -17,11 +18,10 @@ export default function BetConfirmation(props: BetConfirmationProps) {
           Would You like to copy this bet for
         </Text>
         <View style={styles.footerIconContainer}>
-          <View style={styles.dollarIcon}>
-            <IconSymbol size={12} name="hare.fill" color="white" />
+          <View style={[styles.dollarIcon, {backgroundColor: isCurrencyCoin ? Colors.cash : Colors.coin }]}>
+            <IconSymbol size={12} name={isCurrencyCoin ? "hare.fill" : "dollarsign"} color="white" />
           </View>
-
-          <Text style={styles.cashText}>Cash?</Text>
+          <Text style={[styles.cashText, {color: isCurrencyCoin ? Colors.cash : Colors.coin }]}>{isCurrencyCoin ? "Cash" : "Coin"}?</Text>
         </View>
       </View>
 
@@ -60,7 +60,7 @@ export default function BetConfirmation(props: BetConfirmationProps) {
 
         <TouchableOpacity
           style={{
-            backgroundColor: "#16c54b",
+            backgroundColor: isCurrencyCoin ? Colors.cash : Colors.coin,
             paddingHorizontal: "18%",
             paddingVertical: 8,
             marginLeft: 12,
