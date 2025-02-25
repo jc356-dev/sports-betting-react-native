@@ -5,19 +5,18 @@ import { Colors } from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function CurrencyToggle() {
-  const { isCurrencyCoin, setIsCurrencyCoin } = useBetSlip();
+  const { isCurrencyCoin, toggleCurrency } = useBetSlip();
 
   return (
     <LinearGradient
-      colors={[isCurrencyCoin ? "rgba(240, 47, 149, 0.5)" : "rgba(22, 197, 75, 0.5)", "transparent"]}
+      colors={[
+        isCurrencyCoin ? "rgba(240, 47, 149, 0.5)" : "rgba(22, 197, 75, 0.5)",
+        "transparent",
+      ]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
     >
-      <View
-        style={[
-          styles.container,
-        ]}
-      >
+      <View style={[styles.container]}>
         <View style={styles.contentRow}>
           <View
             style={[
@@ -36,7 +35,9 @@ export default function CurrencyToggle() {
 
         <Switch
           value={isCurrencyCoin ? false : true}
-          onValueChange={(val) => setIsCurrencyCoin(!val)}
+          onValueChange={() => {
+            toggleCurrency();
+          }}
           trackColor={{ false: Colors.coin, true: Colors.cash }}
           thumbColor={"#fff"}
           style={styles.switchIcon}

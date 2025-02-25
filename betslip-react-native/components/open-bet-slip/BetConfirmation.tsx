@@ -9,7 +9,7 @@ interface BetConfirmationProps {
 }
 
 export default function BetConfirmation(props: BetConfirmationProps) {
-  const { setupForAnotherCurrency: setupCashBet, isCurrencyCoin } = useBetSlip()
+  const { toggleCurrency: setupCashBet, isCurrencyCoin } = useBetSlip()
 
   return (
     <View>

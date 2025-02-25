@@ -5,11 +5,14 @@ import { Colors } from "@/constants/Colors";
 
 export default function AmountSummary() {
   const { totalBet, potentialWin, isCurrencyCoin } = useBetSlip();
+  const currencySymbol = isCurrencyCoin ? "" : "$"
   return (
     <View>
       <View style={styles.amountAcontainer}>
         <Text style={styles.totalBetText}>Total Bet</Text>
-        <Text style={styles.totalBetAmount}>{totalBet}</Text>
+        <Text style={styles.totalBetAmount}>
+          {currencySymbol}{totalBet || 0}
+        </Text>
       </View>
 
       <View style={styles.amountAcontainer}>
@@ -20,7 +23,7 @@ export default function AmountSummary() {
             { color: isCurrencyCoin ? Colors.coin : Colors.cash },
           ]}
         >
-          {potentialWin}
+          {currencySymbol}{potentialWin || 0}
         </Text>
       </View>
     </View>
