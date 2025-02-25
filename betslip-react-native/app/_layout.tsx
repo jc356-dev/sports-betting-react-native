@@ -13,8 +13,9 @@ import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ApolloProvider } from "@apollo/client";
 import { apolloClient } from "@/network/apollo-client";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+// import { SafeAreaView } from "react-native";
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -34,14 +35,20 @@ export default function RootLayout() {
   }
 
   return (
-    <ApolloProvider client={apolloClient}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </ApolloProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      {/* <SafeAreaView style={{ flex: 1 }}> */}
+        <ApolloProvider client={apolloClient}>
+          <ThemeProvider
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          >
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+            <StatusBar style="auto" />
+          </ThemeProvider>
+        </ApolloProvider>
+      {/* </SafeAreaView> */}
+    </GestureHandlerRootView>
   );
 }

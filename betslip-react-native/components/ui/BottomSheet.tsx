@@ -13,10 +13,15 @@ import Animated, {
   runOnJS,
 } from "react-native-reanimated";
 import {
+  PanGestureHandler,
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
+import { GestureDetector, Gesture } from "react-native-gesture-handler";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
+const SNAP_TOP = -32;
+const SNAP_BOTTOM = SCREEN_HEIGHT - 32;
+const DRAG_THRESHOLD = SCREEN_HEIGHT * 0.25;
 
 interface BottomSheetProps {
   isVisible: boolean;
@@ -24,29 +29,19 @@ interface BottomSheetProps {
   children: React.ReactNode;
 }
 
-const BottomSheet: React.FC<BottomSheetProps> = ({
-  isVisible,
-  onClose,
-  children,
-}) => {
-  const translateY = useSharedValue(SCREEN_HEIGHT);
+const BottomSheet: React.FC<BottomSheetProps> = ({ isVisible, onClose, children }) => {
+  const translateY = useSharedValue(SNAP_BOTTOM);
 
   const showSheet = useCallback(() => {
-    translateY.value = withSpring(-32, {
-      damping: 15,
-    });
+    translateY.value = withSpring(SNAP_TOP, { damping: 15 });
   }, []);
 
   const hideSheet = useCallback(() => {
+  
     translateY.value = withTiming(SCREEN_HEIGHT, {}, () => {
       runOnJS(onClose)();
     });
   }, [onClose]);
-
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }],
-  }));
 
   useEffect(() => {
     if (isVisible) {
@@ -56,6 +51,22 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
     }
   }, [isVisible, showSheet, hideSheet]);
 
+  const panGesture = Gesture.Pan()
+  .onUpdate((event) => {
+    console.log("Dragging:", event.translationY);
+    translateY.value = Math.max(event.translationY, -32);
+  })
+  .onEnd((event) => {
+    console.log("Closing due to drag...");
+    runOnJS(onClose)();
+    if (event.translationY > DRAG_THRESHOLD) {
+    }
+  });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
+
   return (
     <GestureHandlerRootView style={styles.container}>
       {isVisible && (
@@ -63,15 +74,16 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
           <Animated.View style={styles.backdrop} />
         </TouchableWithoutFeedback>
       )}
-      <Animated.View
-        style={[styles.sheet, animatedStyle]}
-      >
-        <View style={styles.dragHandle} />
-        {children}
-      </Animated.View>
+      <GestureDetector gesture={panGesture}>
+        <Animated.View style={[styles.sheet, animatedStyle]}>
+          <View style={styles.dragHandle} />
+          {children}
+        </Animated.View>
+      </GestureDetector>
     </GestureHandlerRootView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
