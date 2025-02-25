@@ -56,7 +56,6 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isVisible, onClose, children 
     translateY.value = Math.max(event.translationY, -32);
   })
   .onEnd((event) => {
-    console.log("Closing due to drag...");
     runOnJS(onClose)();
     if (event.translationY > DRAG_THRESHOLD) {
     }
