@@ -37,7 +37,6 @@ export enum BetStatus {
 
 interface BetSlipContextProps {
   isCurrencyCoin: boolean;
-  setIsCurrencyCoin: (value: boolean) => void;
   activeTab: Tabs;
   setActiveTab: (tab: Tabs) => void;
   selectedAmount?: number;
@@ -52,7 +51,7 @@ interface BetSlipContextProps {
   bets: Bet[];
   deleteBet: (id: number) => void;
   status: BetStatus;
-  setupForAnotherCurrency: () => void;
+  toggleCurrency: () => void;
 }
 
 const BetSlipContext = createContext<BetSlipContextProps | undefined>(
@@ -140,6 +139,7 @@ export const BetSlipProvider: React.FC<{
         betDetail: bet.betDetail,
         odds: bet.odds,
         amount: bet.amount || 0,
+        currency: isCurrencyCoin ? "coin" : "cash",
         type: activeTab, // "Singles" or "Parlay"
       };
 
@@ -156,7 +156,7 @@ export const BetSlipProvider: React.FC<{
   };
 
   const handleSelectAmount = (amount: string) => {
-    const numericAmount = parseInt(amount.replace("k", "000")) || 0;
+    const numericAmount = parseInt(isCurrencyCoin ? amount.replace("k", "000") : amount.replace("$", "")) || 0;
     const numberOfBets = bets.length;
 
     if (numberOfBets === 0) {
@@ -184,7 +184,7 @@ export const BetSlipProvider: React.FC<{
     setBets(bets.filter((b) => b.id !== id));
   };
 
-  const setupForAnotherCurrency = () => {
+  const toggleCurrency = () => {
     setIsCurrencyCoin(!isCurrencyCoin);
     setSelectedAmount(undefined);
     setStatus(BetStatus.NONE);
@@ -196,7 +196,6 @@ export const BetSlipProvider: React.FC<{
     <BetSlipContext.Provider
       value={{
         isCurrencyCoin,
-        setIsCurrencyCoin,
         activeTab,
         setActiveTab,
         selectedAmount,
@@ -211,7 +210,7 @@ export const BetSlipProvider: React.FC<{
         bets,
         deleteBet,
         status,
-        setupForAnotherCurrency
+        toggleCurrency
       }}
     >
       {children}

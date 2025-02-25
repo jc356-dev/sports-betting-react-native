@@ -6,9 +6,10 @@ import { Bet } from "./type";
 interface BetItemProps {
   bet: Bet;
   onRemove: (id: number) => void;
+  currencySymbol?: string
 }
 
-export const BetItem: React.FC<BetItemProps> = ({ bet, onRemove }) => {
+export const BetItem: React.FC<BetItemProps> = ({ bet, onRemove, currencySymbol = "" }) => {
   return (
     <View style={styles.betItemContainer}>
       <TouchableOpacity style={styles.trashIconContainer} onPress={() => onRemove(bet.id)}>
@@ -30,7 +31,7 @@ export const BetItem: React.FC<BetItemProps> = ({ bet, onRemove }) => {
 
         <View style={styles.matchOddContainer}>
           <Text style={styles.betOddText}>{bet.odds}</Text>
-          <Text style={styles.totalBet}>{bet.amount}</Text>
+          <Text style={styles.totalBet}>{currencySymbol}{bet.amount}</Text>
         </View>
       </View>
     </View>

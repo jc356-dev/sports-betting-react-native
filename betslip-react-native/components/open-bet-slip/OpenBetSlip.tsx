@@ -34,11 +34,12 @@ export default function OpenBetSlip({ close }: OpenBetSlipProps) {
     deleteBet,
     status,
     handleConfirmBet,
+    isCurrencyCoin,
   } = useBetSlip();
 
   useEffect(() => {
-    if(bets.length === 0) {
-      close()
+    if (bets.length === 0) {
+      close();
     }
   }, [bets.length, status]);
 
@@ -62,6 +63,7 @@ export default function OpenBetSlip({ close }: OpenBetSlipProps) {
             onRemove={(id) => {
               deleteBet(id);
             }}
+            currencySymbol={isCurrencyCoin ? "" : "$"}
           />
         ))}
 

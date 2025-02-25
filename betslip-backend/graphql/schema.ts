@@ -20,6 +20,7 @@ export const typeDefs = gql`
     odds: String!
     amount: Int!
     type: String!
+    currency: String!
   }
 
   type Mutation {

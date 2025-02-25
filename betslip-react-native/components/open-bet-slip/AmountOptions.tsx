@@ -11,7 +11,8 @@ import {
 import { useBetSlip } from "./OpenBetSlipContext";
 import { Colors } from "@/constants/Colors";
 
-const AMOUNTS = ["25k", "50k", "100k", "Custom"];
+const COIN_AMOUNT_OPTIONS = ["25k", "50k", "100k", "Custom"];
+const CASH_AMOUNT_OPTIONS = ["$50", "$100", "$200", "Custom"];
 
 const AmountOptions: React.FC = () => {
   const { isCurrencyCoin, selectedAmount, handleSelectAmount } = useBetSlip();
@@ -39,17 +40,19 @@ const AmountOptions: React.FC = () => {
     }
   };
 
+  const options = isCurrencyCoin ? COIN_AMOUNT_OPTIONS : CASH_AMOUNT_OPTIONS
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
       <View style={styles.selectedAmountContainer}>
-        {AMOUNTS.map((amount) => {
+        {options.map((amount) => {
           const numericValue =
             amount === "Custom"
               ? null
-              : parseInt(amount.replace("k", "000"), 10);
+              : parseInt(isCurrencyCoin ? amount.replace("k", "000") : amount.replace("$", ""), 10);
           const isSelected = isCustomSelected
             ? amount === "Custom"
             : selectedAmount === numericValue;
