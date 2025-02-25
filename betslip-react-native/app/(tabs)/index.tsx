@@ -31,22 +31,26 @@ export default function HomeScreen() {
 
   return (
     <ParallaxScrollView>
-      <BetSlipProvider defalutBets={defaultBetItems}>
-        <ThemedView style={styles.container}>
-          <PrimaryButton
-            title="Open Bet Slip"
-            onPress={() => {
-              setSheetVisible(true);
-            }}
-          />
-        </ThemedView>
-        <BottomSheet
-          isVisible={isSheetVisible}
-          onClose={() => setSheetVisible(false)}
-        >
-          <OpenBetSlip />
-        </BottomSheet>
-      </BetSlipProvider>
+      <ThemedView style={styles.container}>
+        <PrimaryButton
+          title="Open Bet Slip"
+          onPress={() => {
+            setSheetVisible(true);
+          }}
+        />
+      </ThemedView>
+      {isSheetVisible ? (
+        <BetSlipProvider defalutBets={defaultBetItems}>
+          <BottomSheet
+            isVisible={isSheetVisible}
+            onClose={() => setSheetVisible(false)}
+          >
+            <OpenBetSlip />
+          </BottomSheet>
+        </BetSlipProvider>
+      ) : (
+        <></>
+      )}
     </ParallaxScrollView>
   );
 }
