@@ -1,42 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { IconSymbol } from "../ui/IconSymbol";
+import { useBetSlip } from "./OpenBetSlipContext";
 
-export default function BetConfirmation() {
-  const [selectedAmount, setSelectedAmount] = useState<string | null>(null);
-  const [totalBet, setTotalBet] = useState<number>(0);
-  const [potentialWin, setPotentialWin] = useState<number>(0);
-  const [xpEarned, setXpEarned] = useState<number>(0);
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [isConfirming, setIsConfirming] = useState(false);
-  const [isConfirmed, setIsConfirmed] = useState(false);
+interface BetConfirmationProps {
+  onNo: () => void;
+}
 
-  const handleConfirmBet = () => {
-    if (!selectedAmount) return;
-
-    setIsConfirming(true);
-    setIsConfirmed(false);
-
-    setTimeout(() => {
-      setIsConfirming(false);
-      setIsConfirmed(true);
-      setShowConfirmation(true);
-    }, 2000);
-  };
-
-  const handleSelectAmount = (amount: string) => {
-    if (selectedAmount === amount) {
-      setSelectedAmount(null);
-      setTotalBet(0);
-      setPotentialWin(0);
-      setXpEarned(0);
-    } else {
-      setSelectedAmount(amount);
-      setTotalBet(parseInt(amount.replace("k", "000")));
-      setPotentialWin(Math.floor(Math.random() * 10000));
-      setXpEarned(360);
-    }
-  };
+export default function BetConfirmation(props: BetConfirmationProps) {
+  const { setupCashBet } = useBetSlip()
 
   return (
     <View>
@@ -72,12 +44,7 @@ export default function BetConfirmation() {
             borderRadius: 4,
             marginBottom: 12,
           }}
-          onPress={() => {
-            setShowConfirmation(false);
-            setIsConfirming(false);
-            setIsConfirmed(false);
-            setSelectedAmount(null);
-          }}
+          onPress={props.onNo}
         >
           <Text
             style={{
@@ -102,6 +69,7 @@ export default function BetConfirmation() {
             borderRadius: 4,
             marginBottom: 12,
           }}
+          onPress={setupCashBet}
         >
           <Text
             style={{
@@ -127,7 +95,7 @@ const styles = StyleSheet.create({
     gap: 12,
     marginTop: 12,
   },
-  footerText: { color: "white", fontSize: 16, fontWeight: "700" },
+  footerText: { color: "white", fontSize: 14, fontWeight: "700" },
   footerIconContainer: {
     flexDirection: "row",
     gap: 8,

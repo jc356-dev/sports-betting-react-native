@@ -15,6 +15,7 @@ export interface Mutation {
     match: string,
     betDetail: string,
     odds: string,
-    amount: number
+    amount: number,
+    type: string
   ) => Bet;
 }

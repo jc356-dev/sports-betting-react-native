@@ -7,13 +7,22 @@ export const typeDefs = gql`
     betDetail: String!
     odds: String!
     amount: Int!
+    type: String
   }
 
   type Query {
     bets: [Bet!]!
   }
 
-  type Mutation {
-    placeBet(match: String!, betDetail: String!, odds: String!, amount: Int!): Bet!
+  input PlaceBetInput {
+    match: String!
+    betDetail: String!
+    odds: String!
+    amount: Int!
+    type: String!
   }
-`;    
+
+  type Mutation {
+    placeBet(input: PlaceBetInput!): Bet!
+  }
+`;

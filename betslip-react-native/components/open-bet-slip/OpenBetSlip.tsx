@@ -8,16 +8,39 @@ import AmountOptions from "./AmountOptions";
 import PrimaryButton from "../ui/PrimaryButton";
 import BetConfirmation from "./BetConfirmation";
 import AmountSummary from "./AmountSummary";
-import { Tabs, useBetSlip } from "./OpenBetSlipContext";
+import { BetStatus, Tabs, useBetSlip } from "./OpenBetSlipContext";
 
 const TabNames = Object.values(Tabs);
 
-export default function OpenBetSlip() {
-  const { activeTab, setActiveTab, selectedAmount, xpEarned, bets, deleteBet } =
-    useBetSlip();
-  const [showConfirmation, setShowConfirmation] = useState(false);
+const ButtonLabelByStatus = {
+  [BetStatus.NONE]: "Confirm Bet",
+  [BetStatus.CONFIRMING]: "Confirming...",
+  [BetStatus.CONFIRMED]: "Confirmed",
+  [BetStatus.COMPLETED]: "Completed",
+};
 
-  useEffect(() => {}, []);
+interface OpenBetSlipProps {
+  close: () => void;
+}
+
+export default function OpenBetSlip({ close }: OpenBetSlipProps) {
+  const {
+    activeTab,
+    setActiveTab,
+    selectedAmount,
+    xpEarned,
+    bets,
+    deleteBet,
+    status,
+    handleConfirmBet,
+    isCurrencyCoin,
+  } = useBetSlip();
+
+  useEffect(() => {
+    if(bets.length === 0 || (status === BetStatus.CONFIRMED && !isCurrencyCoin)) {
+      close()
+    }
+  }, [bets.length, status]);
 
   return (
     <View style={styles.modalConatiner}>
@@ -56,47 +79,29 @@ export default function OpenBetSlip() {
           </View>
         )}
 
-        {/* <TouchableOpacity
-        disabled={!selectedAmount || isConfirming || isConfirmed}
-        style={{
-          backgroundColor: selectedAmount ? "#d6c726" : "#5f5919",
-          padding: 12,
-          marginHorizontal: 12,
-          marginTop: 12,
-          borderRadius: 4,
-          marginBottom: 12,
-          opacity: selectedAmount ? 1 : 0.5,
-          flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 8,
-        }}
-        onPress={handleConfirmBet}
-      >
-        {isConfirming ? (
-          <ActivityIndicator size="small" color="black" />
-        ) : isConfirmed ? (
-          <IconSymbol size={20} name="circle" color="black" />
-        ) : null}
-        
-        <TouchableOpacity onPress={handleConfirmBet}>
-          <Text>
-            {isConfirming
-              ? "Confirming..."
-              : isConfirmed
-              ? "✔ CONFIRMED"
-              : "CONFIRM BET"}
-          </Text>
-        </TouchableOpacity>
-      </TouchableOpacity> */}
-
         <View style={{}}>
-          <PrimaryButton title="Confirm Bet" onPress={() => {}} disabled />
+          <PrimaryButton
+            title={ButtonLabelByStatus[status]}
+            onPress={() => {
+              handleConfirmBet();
+            }}
+            disabled={
+              !selectedAmount ||
+              ![BetStatus.FAILED, BetStatus.NONE].includes(status)
+            }
+            loading={BetStatus.CONFIRMING === status}
+          />
         </View>
 
         <Text style={styles.maxAmountText}>Max Bet Amount: 1,000.000</Text>
 
-        {showConfirmation && <BetConfirmation />}
+        {BetStatus.CONFIRMED === status && isCurrencyCoin && (
+          <BetConfirmation
+            onNo={() => {
+              close();
+            }}
+          />
+        )}
       </View>
     </View>
   );

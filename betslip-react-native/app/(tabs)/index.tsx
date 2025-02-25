@@ -1,4 +1,4 @@
-import { Button, Image, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedView } from "@/components/ThemedView";
@@ -7,27 +7,23 @@ import BottomSheet from "@/components/ui/BottomSheet";
 import { useState } from "react";
 import OpenBetSlip from "@/components/open-bet-slip/OpenBetSlip";
 import { BetSlipProvider } from "@/components/open-bet-slip/OpenBetSlipContext";
-import { Bet } from "@/components/open-bet-slip/type";
+import { gql, useQuery } from "@apollo/client";
 
-const defaultBetItems: Bet[] = [
-  {
-    id: 1,
-    match: "Warriors vs Bucks",
-    endTime: "Ends at: 8:00 PM East",
-    betDetail: "Warriors - 3.5",
-    odds: "-120",
-  },
-  {
-    id: 2,
-    match: "Hornet vs Kings",
-    endTime: "Ends at: 8:00 PM East",
-    betDetail: "Kings Moneyline",
-    odds: "+140",
-  },
-];
+const GET_BETS = gql`
+  query {
+    bets {
+      id
+      match
+      betDetail
+      odds
+      amount
+    }
+  }
+`;
 
 export default function HomeScreen() {
   const [isSheetVisible, setSheetVisible] = useState(false);
+  const { data } = useQuery(GET_BETS);
 
   return (
     <ParallaxScrollView>
@@ -39,13 +35,13 @@ export default function HomeScreen() {
           }}
         />
       </ThemedView>
-      {isSheetVisible ? (
-        <BetSlipProvider defalutBets={defaultBetItems}>
+      {isSheetVisible && Array.isArray(data.bets) ? (
+        <BetSlipProvider defalutBets={data.bets}>
           <BottomSheet
             isVisible={isSheetVisible}
             onClose={() => setSheetVisible(false)}
           >
-            <OpenBetSlip />
+            <OpenBetSlip close={() => setSheetVisible(false)} />
           </BottomSheet>
         </BetSlipProvider>
       ) : (

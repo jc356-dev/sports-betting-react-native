@@ -6,8 +6,8 @@ export const resolvers = {
     bets: (): Bet[] => mockBets,
   },
   Mutation: {
-    placeBet: (_: any, args: Omit<Bet, "id">): Bet => {
-      const newBet = { id: `${mockBets.length + 1}`, ...args };
+    placeBet: (_: any, args: any): Bet => {
+      const newBet = { id: Math.random().toString(36).substr(2, 9), ...args.input };
       return newBet;
     },
   },

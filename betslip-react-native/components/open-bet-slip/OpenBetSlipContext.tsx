@@ -7,6 +7,34 @@ import React, {
 } from "react";
 import { Bet } from "./type";
 
+import { useMutation, gql } from "@apollo/client";
+
+const PLACE_BET = gql`
+  mutation PlaceBet($input: PlaceBetInput!) {
+    placeBet(input: $input) {
+      id
+      match
+      betDetail
+      odds
+      amount
+      type
+    }
+  }
+`;
+
+export enum Tabs {
+  Singles = "Singles",
+  Parlay = "Parlay",
+}
+
+export enum BetStatus {
+  NONE,
+  CONFIRMING,
+  CONFIRMED,
+  COMPLETED,
+  FAILED,
+}
+
 interface BetSlipContextProps {
   isCurrencyCoin: boolean;
   setIsCurrencyCoin: (value: boolean) => void;
@@ -19,22 +47,17 @@ interface BetSlipContextProps {
   xpEarned: number;
   showConfirmation: boolean;
   setShowConfirmation: (value: boolean) => void;
-  isConfirming: boolean;
-  isConfirmed: boolean;
   handleConfirmBet: () => void;
   handleSelectAmount: (amount: string) => void;
   bets: Bet[];
   deleteBet: (id: number) => void;
+  status: BetStatus;
+  setupCashBet: () => void;
 }
 
 const BetSlipContext = createContext<BetSlipContextProps | undefined>(
   undefined
 );
-
-export enum Tabs {
-  Singles = "Singles",
-  Parlay = "Parlay",
-}
 
 export const BetSlipProvider: React.FC<{
   children: ReactNode;
@@ -47,9 +70,9 @@ export const BetSlipProvider: React.FC<{
   const [potentialWin, setPotentialWin] = useState(0);
   const [xpEarned, setXpEarned] = useState(360);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [isConfirming, setIsConfirming] = useState(false);
-  const [isConfirmed, setIsConfirmed] = useState(false);
   const [bets, setBets] = useState<Bet[]>(defalutBets ?? []);
+  const [status, setStatus] = useState<BetStatus>(BetStatus.NONE);
+  const [placeBet] = useMutation(PLACE_BET);
 
   const calculateBetValues = () => {
     if (bets.length === 0) {
@@ -106,33 +129,46 @@ export const BetSlipProvider: React.FC<{
   }, [bets, activeTab]);
 
   const handleConfirmBet = () => {
-    if (!selectedAmount) return;
+    if (!selectedAmount || bets.length === 0) return;
 
-    setIsConfirming(true);
-    setIsConfirmed(false);
+    setStatus(BetStatus.CONFIRMING);
+
+
+    bets.forEach(async (bet) => {
+      const betInput = {
+        match: bet.match,
+        betDetail: bet.betDetail,
+        odds: bet.odds,
+        amount: bet.amount || 0,
+        type: activeTab, // "Singles" or "Parlay"
+      };
+
+      try {
+        await placeBet({ variables: { input: betInput } });
+      } catch (error) {
+        console.error("Bet submission failed", error);
+      }
+    });
 
     setTimeout(() => {
-      setIsConfirming(false);
-      setIsConfirmed(true);
-      setShowConfirmation(true);
+      setStatus(BetStatus.CONFIRMED);
     }, 2000);
   };
-
 
   const handleSelectAmount = (amount: string) => {
     const numericAmount = parseInt(amount.replace("k", "000")) || 0;
     const numberOfBets = bets.length;
-  
+
     if (numberOfBets === 0) {
       setTotalBet(0);
       setPotentialWin(0);
       setSelectedAmount(undefined);
       return;
     }
-    
+
     setSelectedAmount(numericAmount);
 
-    const splitAmount = Math.floor(numericAmount / numberOfBets); 
+    const splitAmount = Math.floor(numericAmount / numberOfBets);
 
     setBets((prevBets) =>
       prevBets.map((bet) => ({
@@ -140,13 +176,21 @@ export const BetSlipProvider: React.FC<{
         amount: splitAmount,
       }))
     );
-  
+
     setTotalBet(numericAmount);
   };
 
   const deleteBet = (id: number) => {
     setBets(bets.filter((b) => b.id !== id));
   };
+
+  const setupCashBet = () => {
+    setIsCurrencyCoin(false);
+    setSelectedAmount(undefined);
+    setStatus(BetStatus.NONE);
+    setActiveTab(Tabs.Singles);
+    setBets(bets.map(b => ({...b, amount: 0})));
+  }
 
   return (
     <BetSlipContext.Provider
@@ -162,12 +206,12 @@ export const BetSlipProvider: React.FC<{
         xpEarned,
         showConfirmation,
         setShowConfirmation,
-        isConfirming,
-        isConfirmed,
         handleConfirmBet,
         handleSelectAmount,
         bets,
         deleteBet,
+        status,
+        setupCashBet
       }}
     >
       {children}

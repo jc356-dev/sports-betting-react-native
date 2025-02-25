@@ -1,6 +1,6 @@
 import { Colors } from "@/constants/Colors";
 import React from "react";
-import { TouchableOpacity, Text, StyleSheet, GestureResponderEvent } from "react-native";
+import { TouchableOpacity, Text, StyleSheet, GestureResponderEvent, ActivityIndicator } from "react-native";
 
 interface PrimaryButtonProps {
     title: string;
@@ -8,9 +8,10 @@ interface PrimaryButtonProps {
     style?: object;
     textStyle?: object;
     disabled?: boolean;
+    loading?: boolean
 }
 
-const PrimaryButton: React.FC<PrimaryButtonProps> = ({ title, onPress, style, textStyle, disabled = false }) => {
+const PrimaryButton: React.FC<PrimaryButtonProps> = ({ title, onPress, style, textStyle, loading = false, disabled = false }) => {
     return (
         <TouchableOpacity
             style={[styles.button, disabled && styles.disabledButton, style]}
@@ -18,6 +19,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({ title, onPress, style, te
             activeOpacity={0.8}
             disabled={disabled}
         >
+            {loading && <ActivityIndicator size="small" color="black" />}
             <Text style={[styles.text, disabled && styles.disabledText, textStyle]}>
                 {title}
             </Text>
@@ -33,6 +35,9 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         alignItems: "center",
         justifyContent: "center",
+        display: "flex",
+        flexDirection: "row",
+        gap: 10
     },
     disabledButton: {
         opacity: 0.60
