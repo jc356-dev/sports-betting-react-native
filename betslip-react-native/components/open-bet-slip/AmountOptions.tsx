@@ -39,7 +39,6 @@ const AmountOptions: React.FC = () => {
     }
   };
 
-  console.log('selectedAmount', selectedAmount)
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
