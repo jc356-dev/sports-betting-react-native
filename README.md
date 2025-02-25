@@ -50,6 +50,7 @@ curl --location 'http://127.0.0.1:3000/api/graphql' \
     }
   }
 }'
+```
 
 4. **Run the Development Server:**
    ```sh
