@@ -35,7 +35,7 @@ const AmountOptions: React.FC = () => {
   const handleCustomAmountSubmit = () => {
     if (customAmount) {
       handleSelectAmount(customAmount);
-      setIsCustomSelected(false);
+      setIsCustomSelected(true);
     }
   };
 
@@ -84,6 +84,7 @@ const AmountOptions: React.FC = () => {
           value={customAmount}
           onChangeText={handleCustomAmountChange}
           onSubmitEditing={handleCustomAmountSubmit}
+          onBlur={handleCustomAmountSubmit}
           returnKeyType="done"
         />
       )}
