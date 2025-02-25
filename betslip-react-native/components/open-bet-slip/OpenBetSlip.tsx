@@ -17,6 +17,7 @@ const ButtonLabelByStatus = {
   [BetStatus.CONFIRMING]: "Confirming...",
   [BetStatus.CONFIRMED]: "Confirmed",
   [BetStatus.COMPLETED]: "Completed",
+  [BetStatus.FAILED]: "Failed",
 };
 
 interface OpenBetSlipProps {
@@ -57,6 +58,7 @@ export default function OpenBetSlip({ close }: OpenBetSlipProps) {
       <View style={{ padding: 12 }}>
         {bets.map((bet) => (
           <BetItem
+            key={bet.id}
             bet={bet}
             onRemove={(id) => {
               deleteBet(id);
